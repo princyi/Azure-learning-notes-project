@@ -1,0 +1,211 @@
+# Azure Learning Path: 10 Phases
+
+Legend: **[IaC]** = deployed by `infra/main.bicep` | **[Lab]** = CLI lab in `labs/` | **COSTLY** = delete right after the lab
+
+---
+
+## Phase 1: Foundations (Day 1)
+**Goal:** understand how Azure is organised and how you control access and cost.
+
+| Service / concept | What it is | Where in CloudNotes |
+|---|---|---|
+| Tenant, Management Groups, Subscriptions | Org hierarchy: tenant > mgmt groups > subscriptions | Your free subscription |
+| Resource Groups, Tags | Lifecycle container + metadata | `rg-cloudnotes-dev` [IaC] |
+| Regions, Availability Zones | Geography and datacenter fault domains | `centralindia` / `southindia` pair |
+| Azure Resource Manager (ARM) | The API behind portal/CLI/Bicep | Every deployment |
+| Microsoft Entra ID | Identity: users, groups, apps, service principals | Phase 7 |
+| Azure RBAC | Who can do what at which scope | [Lab] |
+| Azure Policy | Enforce rules (allowed regions, required tags) | [Lab] |
+| Resource Locks | Prevent accidental delete | [Lab] |
+| Cost Management + Budgets | Spend analysis and alerts | [Lab] |
+| Azure Advisor | Recommendations | Portal |
+
+**Lab:** `labs/01-foundations.sh`
+**Break it:** assign yourself Reader on the RG and try to create a storage account. Read the error.
+
+---
+
+## Phase 2: Storage (Day 2)
+| Service | Use | Where |
+|---|---|---|
+| Storage Account | Container for all storage services | [IaC] |
+| Blob Storage (Hot/Cool/Archive, lifecycle) | Attachments | [IaC] |
+| Azure Files | SMB/NFS file share | [Lab] |
+| Queue Storage | Simple queue | [Lab] |
+| Table Storage | Cheap NoSQL | [Lab] |
+| Managed Disks | VM disks | Phase 3 |
+| SAS tokens, stored access policies | Delegated, time-limited access | [Lab] |
+| Redundancy: LRS/ZRS/GRS/GZRS | Durability options | [Lab] |
+| Storage Explorer, AzCopy, Data Lake Gen2 | Tools / hierarchical namespace | [Lab] |
+
+**Lab:** `labs/02-storage.sh`
+**Break it:** generate a SAS token that expires in 1 minute, wait, then use it.
+
+---
+
+## Phase 3: Compute (Days 3-5)
+| Service | Use | Where |
+|---|---|---|
+| Virtual Machines | IaaS, full control | [Lab] |
+| VM Scale Sets | Auto-scaling VM fleets | [Lab] COSTLY |
+| Azure App Service (Web Apps) | PaaS web hosting | API host [IaC] |
+| Azure Functions | Serverless event-driven | `functions/` [IaC] |
+| Azure Container Registry (ACR) | Private Docker images | [IaC] |
+| Azure Container Apps | Serverless containers | [IaC] |
+| Azure Container Instances | Run one container fast | [Lab] |
+| Azure Kubernetes Service (AKS) | Managed Kubernetes | [Lab] COSTLY |
+| Azure Batch | Large parallel jobs | Read-only |
+| Azure Static Web Apps | Front-end + API hosting | Optional UI |
+| Azure Virtual Desktop, Azure Spring Apps | Know they exist | Read-only |
+
+**Lab:** `labs/03-compute.sh`
+**Break it:** stop the App Service plan and watch the API fail, then check what Application Insights shows.
+
+---
+
+## Phase 4: Databases and Caching (Days 6-7)
+| Service | Use | Where |
+|---|---|---|
+| Azure Cosmos DB (NoSQL API) | Notes store, global distribution | [IaC] |
+| Azure SQL Database | Relational, serverless tier | [IaC optional] / [Lab] |
+| Azure Database for PostgreSQL / MySQL (Flexible Server) | Open source relational | [Lab] |
+| Azure Cache for Redis (or Azure Managed Redis) | Caching | [Lab] COSTLY |
+| SQL Managed Instance | Lift-and-shift SQL Server | Read-only |
+| Azure Database Migration Service | Migration | Read-only |
+
+**Lab:** `labs/04-databases.sh`
+**Break it:** query Cosmos with a bad partition key and watch RU charge. Learn why partition key design matters.
+
+---
+
+## Phase 5: Networking (Days 8-10)
+| Service | Use | Where |
+|---|---|---|
+| Virtual Network, Subnets | Private address space | [Lab] |
+| Network Security Groups (NSG) | L4 firewall rules | [Lab] |
+| Private Endpoint / Private DNS Zone | Private access to PaaS | [Lab] |
+| Service Endpoints | Subnet-based PaaS access | [Lab] |
+| Azure DNS | Host DNS zones | [Lab] |
+| Load Balancer | L4 load balancing | [Lab] |
+| Application Gateway + WAF | L7 load balancing | [Lab] COSTLY |
+| Azure Front Door | Global L7 + CDN + WAF | [Lab] |
+| Traffic Manager | DNS-based routing | Read-only |
+| Azure Bastion | Secure RDP/SSH without public IP | [Lab] COSTLY |
+| VPN Gateway / ExpressRoute | Hybrid connectivity | Read-only COSTLY |
+| Azure Firewall, NAT Gateway | Egress control | [Lab] COSTLY |
+| VNet Peering, Virtual WAN | Connect networks | [Lab] |
+| Network Watcher | Diagnostics | Portal |
+
+**Lab:** `labs/05-networking.sh`
+**Break it:** block port 443 in an NSG and use Network Watcher "IP flow verify" to prove why.
+
+---
+
+## Phase 6: Messaging and Integration (Days 11-12)
+| Service | Use | Where |
+|---|---|---|
+| Service Bus (queues, topics) | Reliable enterprise messaging | Note-processing queue [IaC] |
+| Event Grid | Reactive events (blob created, etc.) | [IaC] |
+| Event Hubs | High-volume streaming | [Lab] |
+| Logic Apps | Low-code workflows and connectors | [Lab] |
+| API Management (APIM) | API gateway, policies, throttling | [Lab] (Consumption tier) |
+| Azure Notification Hubs, SignalR Service, Web PubSub | Push / real-time | Optional |
+
+**Lab:** `labs/06-messaging.sh`
+**Break it:** make the Function throw; watch the message retry, then land in the **dead-letter queue**.
+
+---
+
+## Phase 7: Security and Identity (Days 13-14)
+| Service | Use | Where |
+|---|---|---|
+| Managed Identity (system/user-assigned) | Passwordless access to Azure | [IaC] |
+| Key Vault (secrets, keys, certs) | Central secrets | [IaC] |
+| Entra ID app registrations, Conditional Access, PIM | App auth, access policies | [Lab] |
+| Microsoft Defender for Cloud | Posture + threat protection | Portal |
+| Microsoft Sentinel | SIEM/SOAR | Read-only |
+| Azure Policy / Blueprints / Landing Zones | Governance at scale | Read-only |
+| Azure Confidential Computing, Dedicated HSM | Know they exist | Read-only |
+
+**Lab:** `labs/07-security.sh`
+**Break it:** remove the "Key Vault Secrets User" role from the app's identity and reproduce the 403.
+
+---
+
+## Phase 8: Monitoring and Operations (Day 15)
+| Service | Use | Where |
+|---|---|---|
+| Azure Monitor (metrics, alerts, action groups) | Platform monitoring | [IaC] |
+| Log Analytics + KQL | Query logs | [IaC] |
+| Application Insights | APM, distributed tracing | [IaC] |
+| Diagnostic Settings | Route logs to workspace | [IaC] |
+| Azure Backup, Site Recovery | Backup and DR | [Lab] |
+| Azure Automation, Update Manager | Runbooks and patching | Read-only |
+| Service Health, Resource Health | Platform status | Portal |
+
+**Lab:** `labs/08-monitoring.sh` (includes 10 starter KQL queries)
+**Break it:** trigger 20 failed requests and build an alert that emails you.
+
+---
+
+## Phase 9: DevOps and IaC (Days 16-17)
+| Service | Use | Where |
+|---|---|---|
+| Bicep / ARM templates | Native IaC | `infra/` [IaC] |
+| Terraform on Azure (azurerm) | Multi-cloud IaC | Optional |
+| GitHub Actions with OIDC (workload identity federation) | Passwordless CI/CD | `.github/workflows/` |
+| Azure DevOps (Repos, Pipelines, Boards, Artifacts) | Alternative CI/CD suite | Read-only |
+| Azure Deployment Environments, Azure Developer CLI (`azd`) | Templated environments | Optional |
+| Azure App Configuration | Central config + feature flags | [Lab] |
+| Azure Load Testing | Performance testing | Optional |
+
+**Lab:** `labs/09-devops.sh`
+**Break it:** change a resource in the portal, run `az deployment group what-if`, and see the drift.
+
+---
+
+## Phase 10: Data, Analytics and AI (Days 18-21)
+| Service | Use | Where |
+|---|---|---|
+| Azure OpenAI / Azure AI Foundry | LLM summaries of notes | Function code |
+| Azure AI Search | Full-text + vector search | [Lab] |
+| Azure AI Language, Vision, Speech, Translator | Prebuilt AI APIs | [Lab] |
+| Azure AI Document Intelligence | Extract text from PDFs/forms | [Lab] |
+| Azure Machine Learning | Train/deploy ML models | Read-only |
+| Azure Data Factory | ETL / data pipelines | [Lab] |
+| Microsoft Fabric / Synapse Analytics | Unified analytics | Read-only COSTLY |
+| Azure Databricks | Spark | Read-only COSTLY |
+| Azure Stream Analytics | Real-time stream queries | [Lab] |
+| Azure Data Explorer | Fast telemetry analytics | Read-only |
+| Microsoft Purview | Data governance | Read-only |
+| Azure IoT Hub | Device messaging | Read-only |
+
+**Lab:** `labs/10-data-ai.sh`
+**Break it:** index 20 notes in AI Search and compare keyword vs vector results.
+
+---
+
+## Master checklist
+
+- [ ] P1 Subscription, RG, RBAC, Policy, Lock, Budget
+- [ ] P2 Blob, Files, Queue, Table, SAS, lifecycle policy
+- [ ] P3 VM, App Service, Function, ACR, Container Apps, (AKS)
+- [ ] P4 Cosmos DB, SQL DB, PostgreSQL, Redis
+- [ ] P5 VNet, NSG, Private Endpoint, DNS, LB, Front Door
+- [ ] P6 Service Bus, Event Grid, Event Hubs, Logic Apps, APIM
+- [ ] P7 Managed Identity, Key Vault, Entra app registration, Defender
+- [ ] P8 Log Analytics, App Insights, KQL, Alerts, Backup
+- [ ] P9 Bicep, GitHub Actions OIDC, App Configuration
+- [ ] P10 OpenAI, AI Search, Document Intelligence, Data Factory
+
+## Exam map
+- **AZ-900** (fundamentals): Phases 1, 2, 3 overview, 5 overview, 7, 8
+- **AZ-104** (administrator): Phases 1, 2, 3, 5, 7, 8
+- **AZ-204** (developer): Phases 3, 4, 6, 7, 8, 9
+- **AI-102** (AI engineer): Phase 10
+
+## Learning resources
+- Microsoft Learn: https://learn.microsoft.com/training/azure/
+- Azure Architecture Center: https://learn.microsoft.com/azure/architecture/
+- Azure CLI reference: https://learn.microsoft.com/cli/azure/
+- Bicep docs: https://learn.microsoft.com/azure/azure-resource-manager/bicep/
