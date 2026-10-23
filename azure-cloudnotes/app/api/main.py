@@ -1,4 +1,4 @@
-"""CloudNotes API: FastAPI app using only managed identity / Entra ID (no keys, no connection strings).
+""" API: FastAPI app using only managed identity / Entra ID (no keys, no connection strings).
 
 Azure services touched: App Service, Cosmos DB, Blob Storage, Service Bus,
 Key Vault (optional), Application Insights.
