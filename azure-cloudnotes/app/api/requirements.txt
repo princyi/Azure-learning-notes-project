@@ -1,0 +1,9 @@
+fastapi==0.115.*
+uvicorn[standard]==0.32.*
+python-multipart==0.0.*
+azure-identity==1.*
+azure-cosmos==4.*
+azure-storage-blob==12.*
+azure-servicebus==7.*
+azure-keyvault-secrets==4.*
+azure-monitor-opentelemetry==1.*
