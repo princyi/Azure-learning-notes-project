@@ -1,0 +1,24 @@
+I’ve built CloudNotes, a note-taking app you rebuild on Azure over 10 phases, covering about 100 services. I checked that the lab scripts and Python files parse, but I couldn’t compile the Bicep here (no Azure CLI), so run az bicep build or what-if first.
+
+Start with README.md, then follow LEARNING_PATH.md: a service-by-service table for each phase, a “Break it” exercise, and a checklist mapped to AZ-900, AZ-104, AZ-204 and AI-102.
+
+Phase	Services
+1. Foundations	RBAC, Policy, locks, budgets
+2. Storage	Blob, Files, Queue, Table, SAS
+3. Compute	VM, VMSS, App Service, Functions, ACR, Container Apps, AKS
+4. Databases	Cosmos DB, SQL, PostgreSQL, Redis
+5. Networking	VNet, NSG, Private Endpoint, DNS, load balancers, Front Door
+6. Messaging	Service Bus, Event Grid, Event Hubs, Logic Apps, API Management
+7. Security	Managed Identity, Key Vault, Entra ID, Defender
+8. Monitoring	Log Analytics, Application Insights, KQL queries, alerts, Backup
+9. DevOps	Bicep, GitHub Actions with OIDC, App Configuration
+10. Data and AI	Azure OpenAI, AI Search, Document Intelligence, Data Factory, Stream Analytics
+infra/main.bicep: deploys the core stack with passwordless access (managed identity), a dead-letter alert and diagnostics.
+labs/01 to labs/10: CLI scripts to run line by line, not all at once.
+app/api and functions/: a FastAPI service and a Service Bus-triggered Function that use Cosmos DB, Blob, Service Bus, Key Vault and Application Insights.
+.github/workflows/deploy.yml: CI/CD without stored secrets.
+Cost: set the budget alert in lab 1 first. Labs marked COSTLY (AKS, Redis, Firewall, Bastion, App Gateway) cost real money per hour, so delete them right after.
+Not hands-on: Fabric, Databricks, Azure ML, Purview and Sentinel are portal walkthroughs only, because they’re expensive or need licences.
+Azure OpenAI: it needs access approval and model names change, so check the Foundry model catalog before running that part of lab 10.
+
+Next step: run az deployment group create -g rg-cloudnotes-dev -f infra/main.bicep -p infra/main.bicepparam, then start lab 1. Tell me which phase you want to go deeper on and I’ll expand it.
